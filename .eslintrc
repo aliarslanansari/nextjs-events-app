@@ -1,7 +1,18 @@
 {
-  "extends": "next",
+  "extends": ["next", "prettier"],
+  "plugins": ["prettier"],
   "rules": {
     "no-unused-vars": "warn",
-    "no-undef": "error"
+    "no-undef": "error",
+    "prettier/prettier": [
+      "warn",
+      {
+        "tabWidth": 2,
+        "useTabs": false,
+        "semi": false,
+        "singleQuote": true,
+        "endOfLine": "auto"
+      }
+    ]
   }
 }
