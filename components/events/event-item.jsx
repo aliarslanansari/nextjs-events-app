@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 const EventItem = (props) => {
-  const { id, title, description, location, date, image, isFeatured } = props
+  const { id, title, location, date, image } = props
 
   const humanReadableDate = new Date(date).toLocaleDateString('en-IN', {
     day: 'numeric',
@@ -10,10 +10,11 @@ const EventItem = (props) => {
   })
 
   const formattedAddress = location.replace(', ', '\n')
+  const exploreLink = `/events/${id}`
 
   return (
     <li>
-      <Image src={'/' + image} alt='' />
+      <img src={'/' + image} alt={title} />
       <div>
         <div>
           <h2>{title}</h2>
@@ -23,7 +24,7 @@ const EventItem = (props) => {
           <div>
             <address>{formattedAddress}</address>
           </div>
-          <Link href='/'>Explore Event</Link>
+          <Link href={exploreLink}>Explore Event</Link>
         </div>
       </div>
     </li>
