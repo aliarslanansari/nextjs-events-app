@@ -1,10 +1,14 @@
 import Link from 'next/link'
 import classes from './button.module.css'
-const Button = (props) => {
-  return (
-    <Link href={props.link}>
-      <a className={classes.btn}>{props.children}</a>
+const Button = ({ link, children, onClick }) => {
+  return !!link ? (
+    <Link href={link}>
+      <a className={classes.btn}>{children}</a>
     </Link>
+  ) : (
+    <button className={classes.btn} onClick={onClick}>
+      {children}
+    </button>
   )
 }
 
