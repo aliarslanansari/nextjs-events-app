@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
 import { getFilteredEvents } from '../../dummyData'
 import EventList from './../../components/events/event-list'
+import ResultsTitle from './../../components/events/results-title'
 
 const FilteredEventsPage = () => {
   const router = useRouter()
@@ -27,6 +28,8 @@ const FilteredEventsPage = () => {
     return <p>Invalid filter please adjust your values!</p>
   }
 
+  const date = new Date(numYear, numMonth - 1)
+
   const events = getFilteredEvents({ year: numYear, month: numMonth })
 
   if (!events || events.length === 0) {
@@ -35,6 +38,7 @@ const FilteredEventsPage = () => {
 
   return (
     <div>
+      <ResultsTitle date={date} />
       <EventList items={events} />
     </div>
   )
