@@ -1,15 +1,14 @@
-import { useRouter } from 'next/router'
-import EventSummary from '../../components/event-detail/event-summary'
-import EventLogistics from '../../components/event-detail/event-logistics'
 import EventContent from '../../components/event-detail/event-content'
-import { getEventById, getAllEvents } from '../../dummyData'
+import EventLogistics from '../../components/event-detail/event-logistics'
+import EventSummary from '../../components/event-detail/event-summary'
 import ErrorAlert from '../../components/ui/error-alert'
+import { getEventById, getFeaturedEvents } from '../../dummyData'
 
 const EventDetails = ({ event }) => {
   if (!event) {
     return (
       <ErrorAlert>
-        <p>No Event Found</p>
+        <p>Loading...</p>
       </ErrorAlert>
     )
   }
@@ -33,15 +32,22 @@ const EventDetails = ({ event }) => {
 export async function getStaticProps(context) {
   const eventId = context.params.eventId
   const event = getEventById(eventId)
+  if (!event) {
+    return {
+      notFound: true,
+    }
+  }
   return {
     props: { event },
+    revalidate: 30,
   }
 }
 export async function getStaticPaths() {
-  const events = getAllEvents()
+  const events = getFeaturedEvents()
+  const paths = events.map((event) => ({ params: { eventId: event.id } }))
   return {
-    paths: events.map((event) => ({ params: { eventId: event.id } })),
-    fallback: false,
+    paths,
+    fallback: true,
   }
 }
 
