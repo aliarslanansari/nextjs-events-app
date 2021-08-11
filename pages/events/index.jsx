@@ -3,9 +3,8 @@ import EventSearch from '../../components/events/events-search'
 import { getAllEvents } from '../../dummyData'
 import { useRouter } from 'next/router'
 
-const AllEventsPage = () => {
+const AllEventsPage = ({ events }) => {
   const router = useRouter()
-  const events = getAllEvents()
 
   const onFilter = (selectedYear, selectedMonth) => {
     const fullPath = `/events/${selectedYear}/${selectedMonth}`
@@ -18,6 +17,13 @@ const AllEventsPage = () => {
       <EventList items={events} />
     </>
   )
+}
+
+export async function getStaticProps() {
+  const events = getAllEvents()
+  return {
+    props: { events },
+  }
 }
 
 export default AllEventsPage
