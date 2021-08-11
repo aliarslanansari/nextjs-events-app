@@ -1,20 +1,30 @@
 import { useRouter } from 'next/router'
+import useSWR from 'swr'
 import Button from '../../components/ui/button'
 import { getFilteredEvents } from '../../dummyData'
 import EventList from './../../components/events/event-list'
 import ResultsTitle from './../../components/events/results-title'
 import ErrorAlert from './../../components/ui/error-alert'
 
-const FilteredEventsPage = ({ hasError, events, date }) => {
+const FilteredEventsPage = ({ hasError, date }) => {
   const router = useRouter()
 
   const filterData = router.query.slug
 
-  if (!filterData) {
+  const filteredYear = filterData[0]
+  const filteredMonth = filterData[1]
+  const numYear = +filteredYear
+  const numMonth = +filteredMonth
+
+  const { data, error } = useSWR('filteredeventapicall', () =>
+    getFilteredEvents({ year: numYear, month: numMonth })
+  )
+
+  if (!data) {
     return <p className="center">Loading...</p>
   }
 
-  if (hasError) {
+  if (error) {
     return (
       <>
         <ErrorAlert>
@@ -27,7 +37,7 @@ const FilteredEventsPage = ({ hasError, events, date }) => {
     )
   }
 
-  if (!events || events.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <>
         <ErrorAlert>
@@ -43,7 +53,7 @@ const FilteredEventsPage = ({ hasError, events, date }) => {
   return (
     <div>
       <ResultsTitle date={date} />
-      <EventList items={events} />
+      <EventList items={data} />
     </div>
   )
 }
