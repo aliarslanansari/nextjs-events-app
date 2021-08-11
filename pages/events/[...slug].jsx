@@ -5,7 +5,7 @@ import EventList from './../../components/events/event-list'
 import ResultsTitle from './../../components/events/results-title'
 import ErrorAlert from './../../components/ui/error-alert'
 
-const FilteredEventsPage = () => {
+const FilteredEventsPage = ({ hasError, events, date }) => {
   const router = useRouter()
 
   const filterData = router.query.slug
@@ -14,19 +14,7 @@ const FilteredEventsPage = () => {
     return <p className="center">Loading...</p>
   }
 
-  const filteredYear = filterData[0]
-  const filteredMonth = filterData[1]
-
-  const numYear = +filteredYear
-  const numMonth = +filteredMonth
-
-  if (
-    isNaN(numMonth) ||
-    isNaN(numYear) ||
-    numYear > 2030 ||
-    numMonth < 1 ||
-    numMonth > 12
-  ) {
+  if (hasError) {
     return (
       <>
         <ErrorAlert>
@@ -39,15 +27,11 @@ const FilteredEventsPage = () => {
     )
   }
 
-  const date = new Date(numYear, numMonth - 1)
-
-  const events = getFilteredEvents({ year: numYear, month: numMonth })
-
   if (!events || events.length === 0) {
     return (
       <>
         <ErrorAlert>
-          <p>Invalid filter please adjust your values!</p>
+          <p>No events for choosen filter!</p>
         </ErrorAlert>
         <div className="center">
           <Button link={`/events`}>Show All Events</Button>
@@ -62,6 +46,38 @@ const FilteredEventsPage = () => {
       <EventList items={events} />
     </div>
   )
+}
+
+export async function getServerSideProps(context) {
+  const params = context.params
+  const filterData = params.slug
+
+  const filteredYear = filterData[0]
+  const filteredMonth = filterData[1]
+
+  const numYear = +filteredYear
+  const numMonth = +filteredMonth
+
+  if (
+    isNaN(numMonth) ||
+    isNaN(numYear) ||
+    numYear > 2030 ||
+    numMonth < 1 ||
+    numMonth > 12
+  ) {
+    return {
+      props: {
+        hasError: true,
+      },
+    }
+  }
+
+  const events = getFilteredEvents({ year: numYear, month: numMonth })
+  const date = new Date(numYear, numMonth - 1)
+
+  return {
+    props: { events, date: date.toJSON() },
+  }
 }
 
 export default FilteredEventsPage
